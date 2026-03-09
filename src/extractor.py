@@ -18,10 +18,18 @@ def clean_value(val):
 
 
 def dms_to_decimal(dms_tuple, ref):
-    degrees = dms_tuple[0][0] / dms_tuple[0][1]
-    minutes = dms_tuple[1][0] / dms_tuple[1][1]
-    seconds = dms_tuple[2][0] / dms_tuple[2][1]
-    decimal = degrees + minutes / 60 + seconds / 3600
+    def to_float(any_rational):
+        try:
+            return float(any_rational)
+        except (TypeError, ZeroDivisionError):
+            return 0.0
+
+    degrees = to_float(dms_tuple[0])
+    minutes = to_float(dms_tuple[1])
+    seconds = to_float(dms_tuple[2])
+
+    decimal = degrees + (minutes / 60) + (seconds / 3600)
+
     if ref in [b'S', b'W', 'S', 'W']:
         decimal = -decimal
     return decimal
@@ -33,7 +41,7 @@ def has_gps(data: dict):
 
 def latitude(data: dict):
     gps_info = data.get("GPSInfo")
-    if gps_info and 2 in gps_info:
+    if isinstance(gps_info, dict) and 2 in gps_info:
         return dms_to_decimal(gps_info[2], gps_info.get(1))
     return None
 
@@ -41,7 +49,7 @@ def latitude(data: dict):
 
 def longitude(data: dict):
     gps_info = data.get("GPSInfo")
-    if gps_info and 4 in gps_info:
+    if isinstance(gps_info, dict) and 4 in gps_info:
         return dms_to_decimal(gps_info[4], gps_info.get(3))
     return None
 
@@ -75,7 +83,7 @@ def extract_metadata(image_path):
     # תיקון: טיפול בתמונה בלי EXIF - בלי זה, exif.items() נופל עם AttributeError
     try:
         img = Image.open(image_path)
-        exif = img.getexif()
+        exif = img._getexif()
     except Exception:
         exif = None
 
@@ -124,7 +132,7 @@ def extract_all(folder_path):
     supported_extensions = {'.jpg', '.jpeg', '.png', '.webp', '.heic', '.heif', '.tiff', '.bmp'}
     if not base_path.is_dir():
         return results
-    for file_path in base_path.iterdir():
+    for file_path in base_path.rglob('*'):
         if file_path.is_file() and file_path.suffix.lower() in supported_extensions:
             try:
                 metadata = extract_metadata(str(file_path))

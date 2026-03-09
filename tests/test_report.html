@@ -1,0 +1,894 @@
+
+    <!DOCTYPE html>
+    <html lang="he" dir="rtl">
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+            body { margin: 0; padding: 40px; font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; direction: rtl; }
+            .container { max-width: 1100px; margin: auto; }
+            header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+            h1 { font-weight: 700; font-size: 28px; margin: 0; color: #1e293b; }
+
+            .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
+            .card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+            .card-label { font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 8px; }
+            .card-value { font-size: 24px; font-weight: 700; color: #0f172a; }
+
+            .section-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: #334155; border-right: 4px solid #2563eb; padding-right: 12px; }
+
+            /* תיקון קריטי להצגת המפה */
+            .visual-frame { 
+                background: white; 
+                border: 1px solid #e2e8f0; 
+                border-radius: 12px; 
+                height: 500px; 
+                margin-bottom: 40px; 
+                position: relative;
+                overflow: hidden;
+            }
+
+            /* מוודא שה-iframe של folium ימלא את כל המסגרת */
+            .visual-frame iframe {
+                width: 100% !important;
+                height: 100% !important;
+                border: none !important;
+            }
+
+            .table-container { background: white; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
+            table { width: 100%; border-collapse: collapse; text-align: right; }
+            th { background: #f8fafc; padding: 14px; font-size: 12px; font-weight: 600; color: #64748b; border-bottom: 1px solid #e2e8f0; }
+            td { padding: 14px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+
+            .tag-gps { background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+            .tag-no { background: #f1f5f9; color: #475569; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <header>
+                <h1>דו"ח מודיעין תמונות</h1>
+                <div style="text-align: left;">
+                    <div style="font-size: 12px; color: #64748b;">טווח פעילות:</div>
+                    <div style="font-size: 14px; font-weight: 600;">18/01/2023 - 16/01/2025</div>
+                </div>
+            </header>
+
+            <div class="stats-grid">
+                <div class="card">
+                    <div class="card-label">סה"כ קבצים</div>
+                    <div class="card-value">25</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">קבצים עם מיקום</div>
+                    <div class="card-value" style="color: #2563eb;">16</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">סטטוס ניתוח</div>
+                    <div style="font-size: 14px; font-weight: 600; color: #059669; margin-top: 5px;">זוהתה החלפת מכשיר סביב תאריך 07/02/2023.</div>
+                </div>
+            </div>
+
+            <div class="section-title">תובנות מפתח</div>
+            <div class="card" style="margin-bottom: 40px;">
+                <div style="font-size: 14px; margin-bottom: 8px; color: #475569;">• זוהו 7 מכשירים שונים במאגר.</div><div style="font-size: 14px; margin-bottom: 8px; color: #475569;">• זוהתה החלפת מכשיר סביב תאריך 07/02/2023.</div>
+            </div>
+
+            <div class="section-title">פריסה גיאוגרפית</div>
+            <div class="visual-frame">
+                <div style="width:100%;"><div style="position:relative;width:100%;height:0;padding-bottom:60%;"><span style="color:#565656">Make this Notebook Trusted to load map: File -> Trust Notebook</span><iframe srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    
+    &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+    &lt;script src=&quot;https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;https://code.jquery.com/jquery-3.7.1.min.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js&quot;&gt;&lt;/script&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css&quot;/&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css&quot;/&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css&quot;/&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css&quot;/&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css&quot;/&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css&quot;/&gt;
+    
+            &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;
+            &lt;style&gt;
+                #map_316c76e28cc4853364d4e6ff19779060 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            &lt;/style&gt;
+
+            &lt;style&gt;html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            &lt;/style&gt;
+
+            &lt;style&gt;#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            &lt;/style&gt;
+
+            &lt;script&gt;
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            &lt;/script&gt;
+
+        
+&lt;/head&gt;
+&lt;body&gt;
+    
+    
+            &lt;div class=&quot;folium-map&quot; id=&quot;map_316c76e28cc4853364d4e6ff19779060&quot; &gt;&lt;/div&gt;
+        
+&lt;/body&gt;
+&lt;script&gt;
+    
+    
+            var map_316c76e28cc4853364d4e6ff19779060 = L.map(
+                &quot;map_316c76e28cc4853364d4e6ff19779060&quot;,
+                {
+                    center: [31.199047211092594, 34.90442830553704],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  &quot;zoom&quot;: 10,
+  &quot;zoomControl&quot;: true,
+  &quot;preferCanvas&quot;: false,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_316c76e28cc4853364d4e6ff19779060);
+
+            
+
+        
+    
+            var tile_layer_fa8d017c01fcdfff593a8298ccfdf88f = L.tileLayer(
+                &quot;https://tile.openstreetmap.org/{z}/{x}/{y}.png&quot;,
+                {
+  &quot;minZoom&quot;: 0,
+  &quot;maxZoom&quot;: 19,
+  &quot;maxNativeZoom&quot;: 19,
+  &quot;noWrap&quot;: false,
+  &quot;attribution&quot;: &quot;\u0026copy; \u003ca href=\&quot;https://www.openstreetmap.org/copyright\&quot;\u003eOpenStreetMap\u003c/a\u003e contributors&quot;,
+  &quot;subdomains&quot;: &quot;abc&quot;,
+  &quot;detectRetina&quot;: false,
+  &quot;tms&quot;: false,
+  &quot;opacity&quot;: 1,
+}
+
+            );
+        
+    
+            tile_layer_fa8d017c01fcdfff593a8298ccfdf88f.addTo(map_316c76e28cc4853364d4e6ff19779060);
+        
+    
+            var circle_marker_a10f1e2273b910486f3afe1ba2be225f = L.circleMarker(
+                [28.52880299972222, 34.469901499722226],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;white&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: true, &quot;fillColor&quot;: &quot;#E63946&quot;, &quot;fillOpacity&quot;: 0.85, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 9, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_316c76e28cc4853364d4e6ff19779060);
+        
+    
+        var popup_ea2c0492fa6c957b4883bf209ef40826 = L.popup({
+  &quot;maxWidth&quot;: 300,
+});
+
+        
+            
+                var html_782472222296eb485ea1be6310998a18 = $(`&lt;div id=&quot;html_782472222296eb485ea1be6310998a18&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;             &lt;div style=&quot;font-family: &#x27;Segoe UI&#x27;, Tahoma, Geneva, Verdana, sans-serif; direction: rtl; text-align: right; min-width: 200px; padding: 5px;&quot;&gt;                 &lt;b style=&quot;color: #E63946; font-size: 15px; border-bottom: 2px solid #E63946; padding-bottom: 3px;&quot;&gt;20230803_114132.jpg&lt;/b&gt;                 &lt;div style=&quot;margin-top: 10px; font-size: 13px; color: #333;&quot;&gt;                     &lt;b&gt;תאריך:&lt;/b&gt; 2023:08:03 11:41:33&lt;br&gt;                     &lt;b&gt;מכשיר:&lt;/b&gt; &lt;span style=&quot;color: #E63946; font-weight: bold;&quot;&gt;samsung Galaxy A24&lt;/span&gt;&lt;br&gt;                     &lt;hr style=&quot;border: 0; border-top: 1px solid #eee; margin: 8px 0;&quot;&gt;                     &lt;small style=&quot;color: #666;&quot;&gt;נתיב: N/A&lt;/small&gt;                 &lt;/div&gt;             &lt;/div&gt;         &lt;/div&gt;`)[0];
+                popup_ea2c0492fa6c957b4883bf209ef40826.setContent(html_782472222296eb485ea1be6310998a18);
+            
+        
+
+        circle_marker_a10f1e2273b910486f3afe1ba2be225f.bindPopup(popup_ea2c0492fa6c957b4883bf209ef40826)
+        ;
+
+        
+    
+    
+            var circle_marker_ca25ed0b282dc4879bf0639bb2f211e0 = L.circleMarker(
+                [29.433605166666666, 34.82882308333334],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;white&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: true, &quot;fillColor&quot;: &quot;#E63946&quot;, &quot;fillOpacity&quot;: 0.85, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 9, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_316c76e28cc4853364d4e6ff19779060);
+        
+    
+        var popup_9e029ae6bc19fd0301da0b747146f9be = L.popup({
+  &quot;maxWidth&quot;: 300,
+});
+
+        
+            
+                var html_2edf517241a8544177f04f8a2df20d9e = $(`&lt;div id=&quot;html_2edf517241a8544177f04f8a2df20d9e&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;             &lt;div style=&quot;font-family: &#x27;Segoe UI&#x27;, Tahoma, Geneva, Verdana, sans-serif; direction: rtl; text-align: right; min-width: 200px; padding: 5px;&quot;&gt;                 &lt;b style=&quot;color: #E63946; font-size: 15px; border-bottom: 2px solid #E63946; padding-bottom: 3px;&quot;&gt;20230803_125716.jpg&lt;/b&gt;                 &lt;div style=&quot;margin-top: 10px; font-size: 13px; color: #333;&quot;&gt;                     &lt;b&gt;תאריך:&lt;/b&gt; 2023:08:03 12:57:16&lt;br&gt;                     &lt;b&gt;מכשיר:&lt;/b&gt; &lt;span style=&quot;color: #E63946; font-weight: bold;&quot;&gt;samsung Galaxy A24&lt;/span&gt;&lt;br&gt;                     &lt;hr style=&quot;border: 0; border-top: 1px solid #eee; margin: 8px 0;&quot;&gt;                     &lt;small style=&quot;color: #666;&quot;&gt;נתיב: N/A&lt;/small&gt;                 &lt;/div&gt;             &lt;/div&gt;         &lt;/div&gt;`)[0];
+                popup_9e029ae6bc19fd0301da0b747146f9be.setContent(html_2edf517241a8544177f04f8a2df20d9e);
+            
+        
+
+        circle_marker_ca25ed0b282dc4879bf0639bb2f211e0.bindPopup(popup_9e029ae6bc19fd0301da0b747146f9be)
+        ;
+
+        
+    
+    
+            var circle_marker_1141bcabffe2fcc310a7a4b9a3843e01 = L.circleMarker(
+                [32.085300000000004, 34.7818],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;white&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: true, &quot;fillColor&quot;: &quot;#457B9D&quot;, &quot;fillOpacity&quot;: 0.85, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 9, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_316c76e28cc4853364d4e6ff19779060);
+        
+    
+        var popup_4c629b8efd798210972ea74961c36694 = L.popup({
+  &quot;maxWidth&quot;: 300,
+});
+
+        
+            
+                var html_179b5ecffc62e8806f4af9fe93167e9c = $(`&lt;div id=&quot;html_179b5ecffc62e8806f4af9fe93167e9c&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;             &lt;div style=&quot;font-family: &#x27;Segoe UI&#x27;, Tahoma, Geneva, Verdana, sans-serif; direction: rtl; text-align: right; min-width: 200px; padding: 5px;&quot;&gt;                 &lt;b style=&quot;color: #457B9D; font-size: 15px; border-bottom: 2px solid #457B9D; padding-bottom: 3px;&quot;&gt;IMG_001.jpg&lt;/b&gt;                 &lt;div style=&quot;margin-top: 10px; font-size: 13px; color: #333;&quot;&gt;                     &lt;b&gt;תאריך:&lt;/b&gt; 2025:01:12 08:30:00&lt;br&gt;                     &lt;b&gt;מכשיר:&lt;/b&gt; &lt;span style=&quot;color: #457B9D; font-weight: bold;&quot;&gt;Samsung Galaxy S23&lt;/span&gt;&lt;br&gt;                     &lt;hr style=&quot;border: 0; border-top: 1px solid #eee; margin: 8px 0;&quot;&gt;                     &lt;small style=&quot;color: #666;&quot;&gt;נתיב: N/A&lt;/small&gt;                 &lt;/div&gt;             &lt;/div&gt;         &lt;/div&gt;`)[0];
+                popup_4c629b8efd798210972ea74961c36694.setContent(html_179b5ecffc62e8806f4af9fe93167e9c);
+            
+        
+
+        circle_marker_1141bcabffe2fcc310a7a4b9a3843e01.bindPopup(popup_4c629b8efd798210972ea74961c36694)
+        ;
+
+        
+    
+    
+            var circle_marker_ac20c57e8fa7f2facf1936ac908a363b = L.circleMarker(
+                [32.080400000000004, 34.780499999999996],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;white&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: true, &quot;fillColor&quot;: &quot;#457B9D&quot;, &quot;fillOpacity&quot;: 0.85, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 9, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_316c76e28cc4853364d4e6ff19779060);
+        
+    
+        var popup_542e24156f94877b3565318eddd807b4 = L.popup({
+  &quot;maxWidth&quot;: 300,
+});
+
+        
+            
+                var html_87fdfbb70b6a988861671ed161a1bde9 = $(`&lt;div id=&quot;html_87fdfbb70b6a988861671ed161a1bde9&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;             &lt;div style=&quot;font-family: &#x27;Segoe UI&#x27;, Tahoma, Geneva, Verdana, sans-serif; direction: rtl; text-align: right; min-width: 200px; padding: 5px;&quot;&gt;                 &lt;b style=&quot;color: #457B9D; font-size: 15px; border-bottom: 2px solid #457B9D; padding-bottom: 3px;&quot;&gt;IMG_002.jpg&lt;/b&gt;                 &lt;div style=&quot;margin-top: 10px; font-size: 13px; color: #333;&quot;&gt;                     &lt;b&gt;תאריך:&lt;/b&gt; 2025:01:12 11:15:00&lt;br&gt;                     &lt;b&gt;מכשיר:&lt;/b&gt; &lt;span style=&quot;color: #457B9D; font-weight: bold;&quot;&gt;Samsung Galaxy S23&lt;/span&gt;&lt;br&gt;                     &lt;hr style=&quot;border: 0; border-top: 1px solid #eee; margin: 8px 0;&quot;&gt;                     &lt;small style=&quot;color: #666;&quot;&gt;נתיב: N/A&lt;/small&gt;                 &lt;/div&gt;             &lt;/div&gt;         &lt;/div&gt;`)[0];
+                popup_542e24156f94877b3565318eddd807b4.setContent(html_87fdfbb70b6a988861671ed161a1bde9);
+            
+        
+
+        circle_marker_ac20c57e8fa7f2facf1936ac908a363b.bindPopup(popup_542e24156f94877b3565318eddd807b4)
+        ;
+
+        
+    
+    
+            var circle_marker_17f7d499b50770069b1af3cd4bf8dc47 = L.circleMarker(
+                [32.066700000000004, 34.7667],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;white&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: true, &quot;fillColor&quot;: &quot;#457B9D&quot;, &quot;fillOpacity&quot;: 0.85, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 9, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_316c76e28cc4853364d4e6ff19779060);
+        
+    
+        var popup_2bc23b8bb78ceaa458230506c6afd2ac = L.popup({
+  &quot;maxWidth&quot;: 300,
+});
+
+        
+            
+                var html_80ef6a5475afe5b69b5f2c428fec9b49 = $(`&lt;div id=&quot;html_80ef6a5475afe5b69b5f2c428fec9b49&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;             &lt;div style=&quot;font-family: &#x27;Segoe UI&#x27;, Tahoma, Geneva, Verdana, sans-serif; direction: rtl; text-align: right; min-width: 200px; padding: 5px;&quot;&gt;                 &lt;b style=&quot;color: #457B9D; font-size: 15px; border-bottom: 2px solid #457B9D; padding-bottom: 3px;&quot;&gt;IMG_003.jpg&lt;/b&gt;                 &lt;div style=&quot;margin-top: 10px; font-size: 13px; color: #333;&quot;&gt;                     &lt;b&gt;תאריך:&lt;/b&gt; 2025:01:12 14:00:00&lt;br&gt;                     &lt;b&gt;מכשיר:&lt;/b&gt; &lt;span style=&quot;color: #457B9D; font-weight: bold;&quot;&gt;Samsung Galaxy S23&lt;/span&gt;&lt;br&gt;                     &lt;hr style=&quot;border: 0; border-top: 1px solid #eee; margin: 8px 0;&quot;&gt;                     &lt;small style=&quot;color: #666;&quot;&gt;נתיב: N/A&lt;/small&gt;                 &lt;/div&gt;             &lt;/div&gt;         &lt;/div&gt;`)[0];
+                popup_2bc23b8bb78ceaa458230506c6afd2ac.setContent(html_80ef6a5475afe5b69b5f2c428fec9b49);
+            
+        
+
+        circle_marker_17f7d499b50770069b1af3cd4bf8dc47.bindPopup(popup_2bc23b8bb78ceaa458230506c6afd2ac)
+        ;
+
+        
+    
+    
+            var circle_marker_97bb7389ced328649a83f7b383a7b311 = L.circleMarker(
+                [31.7683, 35.2137],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;white&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: true, &quot;fillColor&quot;: &quot;#2A9D8F&quot;, &quot;fillOpacity&quot;: 0.85, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 9, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_316c76e28cc4853364d4e6ff19779060);
+        
+    
+        var popup_0066a374a9ce82fb933966ebb7284302 = L.popup({
+  &quot;maxWidth&quot;: 300,
+});
+
+        
+            
+                var html_5fca5285356f1242092f79f241a8ff2c = $(`&lt;div id=&quot;html_5fca5285356f1242092f79f241a8ff2c&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;             &lt;div style=&quot;font-family: &#x27;Segoe UI&#x27;, Tahoma, Geneva, Verdana, sans-serif; direction: rtl; text-align: right; min-width: 200px; padding: 5px;&quot;&gt;                 &lt;b style=&quot;color: #2A9D8F; font-size: 15px; border-bottom: 2px solid #2A9D8F; padding-bottom: 3px;&quot;&gt;IMG_004.jpg&lt;/b&gt;                 &lt;div style=&quot;margin-top: 10px; font-size: 13px; color: #333;&quot;&gt;                     &lt;b&gt;תאריך:&lt;/b&gt; 2025:01:13 09:00:00&lt;br&gt;                     &lt;b&gt;מכשיר:&lt;/b&gt; &lt;span style=&quot;color: #2A9D8F; font-weight: bold;&quot;&gt;Apple iPhone 15 Pro&lt;/span&gt;&lt;br&gt;                     &lt;hr style=&quot;border: 0; border-top: 1px solid #eee; margin: 8px 0;&quot;&gt;                     &lt;small style=&quot;color: #666;&quot;&gt;נתיב: N/A&lt;/small&gt;                 &lt;/div&gt;             &lt;/div&gt;         &lt;/div&gt;`)[0];
+                popup_0066a374a9ce82fb933966ebb7284302.setContent(html_5fca5285356f1242092f79f241a8ff2c);
+            
+        
+
+        circle_marker_97bb7389ced328649a83f7b383a7b311.bindPopup(popup_0066a374a9ce82fb933966ebb7284302)
+        ;
+
+        
+    
+    
+            var circle_marker_365ef04af3bc3987b02dd60fad803f0d = L.circleMarker(
+                [31.778, 35.2354],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;white&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: true, &quot;fillColor&quot;: &quot;#2A9D8F&quot;, &quot;fillOpacity&quot;: 0.85, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 9, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_316c76e28cc4853364d4e6ff19779060);
+        
+    
+        var popup_8ebc7061ee6c2bfcec6c984f494c1ff5 = L.popup({
+  &quot;maxWidth&quot;: 300,
+});
+
+        
+            
+                var html_9f0648c9dce80bfb537cad526fd7d042 = $(`&lt;div id=&quot;html_9f0648c9dce80bfb537cad526fd7d042&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;             &lt;div style=&quot;font-family: &#x27;Segoe UI&#x27;, Tahoma, Geneva, Verdana, sans-serif; direction: rtl; text-align: right; min-width: 200px; padding: 5px;&quot;&gt;                 &lt;b style=&quot;color: #2A9D8F; font-size: 15px; border-bottom: 2px solid #2A9D8F; padding-bottom: 3px;&quot;&gt;IMG_005.jpg&lt;/b&gt;                 &lt;div style=&quot;margin-top: 10px; font-size: 13px; color: #333;&quot;&gt;                     &lt;b&gt;תאריך:&lt;/b&gt; 2025:01:13 12:30:00&lt;br&gt;                     &lt;b&gt;מכשיר:&lt;/b&gt; &lt;span style=&quot;color: #2A9D8F; font-weight: bold;&quot;&gt;Apple iPhone 15 Pro&lt;/span&gt;&lt;br&gt;                     &lt;hr style=&quot;border: 0; border-top: 1px solid #eee; margin: 8px 0;&quot;&gt;                     &lt;small style=&quot;color: #666;&quot;&gt;נתיב: N/A&lt;/small&gt;                 &lt;/div&gt;             &lt;/div&gt;         &lt;/div&gt;`)[0];
+                popup_8ebc7061ee6c2bfcec6c984f494c1ff5.setContent(html_9f0648c9dce80bfb537cad526fd7d042);
+            
+        
+
+        circle_marker_365ef04af3bc3987b02dd60fad803f0d.bindPopup(popup_8ebc7061ee6c2bfcec6c984f494c1ff5)
+        ;
+
+        
+    
+    
+            var circle_marker_1e8f50f00a0d6c5e083ce10869add52f = L.circleMarker(
+                [31.7742, 35.2258],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;white&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: true, &quot;fillColor&quot;: &quot;#2A9D8F&quot;, &quot;fillOpacity&quot;: 0.85, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 9, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_316c76e28cc4853364d4e6ff19779060);
+        
+    
+        var popup_a3bfc33f9623597ef0c5faf11add0256 = L.popup({
+  &quot;maxWidth&quot;: 300,
+});
+
+        
+            
+                var html_c210c066211b5ccb3c531d858c105e9a = $(`&lt;div id=&quot;html_c210c066211b5ccb3c531d858c105e9a&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;             &lt;div style=&quot;font-family: &#x27;Segoe UI&#x27;, Tahoma, Geneva, Verdana, sans-serif; direction: rtl; text-align: right; min-width: 200px; padding: 5px;&quot;&gt;                 &lt;b style=&quot;color: #2A9D8F; font-size: 15px; border-bottom: 2px solid #2A9D8F; padding-bottom: 3px;&quot;&gt;IMG_006.jpg&lt;/b&gt;                 &lt;div style=&quot;margin-top: 10px; font-size: 13px; color: #333;&quot;&gt;                     &lt;b&gt;תאריך:&lt;/b&gt; 2025:01:13 16:45:00&lt;br&gt;                     &lt;b&gt;מכשיר:&lt;/b&gt; &lt;span style=&quot;color: #2A9D8F; font-weight: bold;&quot;&gt;Apple iPhone 15 Pro&lt;/span&gt;&lt;br&gt;                     &lt;hr style=&quot;border: 0; border-top: 1px solid #eee; margin: 8px 0;&quot;&gt;                     &lt;small style=&quot;color: #666;&quot;&gt;נתיב: N/A&lt;/small&gt;                 &lt;/div&gt;             &lt;/div&gt;         &lt;/div&gt;`)[0];
+                popup_a3bfc33f9623597ef0c5faf11add0256.setContent(html_c210c066211b5ccb3c531d858c105e9a);
+            
+        
+
+        circle_marker_1e8f50f00a0d6c5e083ce10869add52f.bindPopup(popup_a3bfc33f9623597ef0c5faf11add0256)
+        ;
+
+        
+    
+    
+            var circle_marker_b49f8bc3f9a0183541fb1adc16c47b14 = L.circleMarker(
+                [32.794, 34.9896],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;white&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: true, &quot;fillColor&quot;: &quot;#2A9D8F&quot;, &quot;fillOpacity&quot;: 0.85, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 9, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_316c76e28cc4853364d4e6ff19779060);
+        
+    
+        var popup_8da22ef793bc42c0a15023f55ae5749e = L.popup({
+  &quot;maxWidth&quot;: 300,
+});
+
+        
+            
+                var html_915780eb961eb18c21d54eaa009e9568 = $(`&lt;div id=&quot;html_915780eb961eb18c21d54eaa009e9568&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;             &lt;div style=&quot;font-family: &#x27;Segoe UI&#x27;, Tahoma, Geneva, Verdana, sans-serif; direction: rtl; text-align: right; min-width: 200px; padding: 5px;&quot;&gt;                 &lt;b style=&quot;color: #2A9D8F; font-size: 15px; border-bottom: 2px solid #2A9D8F; padding-bottom: 3px;&quot;&gt;IMG_007.jpg&lt;/b&gt;                 &lt;div style=&quot;margin-top: 10px; font-size: 13px; color: #333;&quot;&gt;                     &lt;b&gt;תאריך:&lt;/b&gt; 2025:01:14 10:00:00&lt;br&gt;                     &lt;b&gt;מכשיר:&lt;/b&gt; &lt;span style=&quot;color: #2A9D8F; font-weight: bold;&quot;&gt;Apple iPhone 15 Pro&lt;/span&gt;&lt;br&gt;                     &lt;hr style=&quot;border: 0; border-top: 1px solid #eee; margin: 8px 0;&quot;&gt;                     &lt;small style=&quot;color: #666;&quot;&gt;נתיב: N/A&lt;/small&gt;                 &lt;/div&gt;             &lt;/div&gt;         &lt;/div&gt;`)[0];
+                popup_8da22ef793bc42c0a15023f55ae5749e.setContent(html_915780eb961eb18c21d54eaa009e9568);
+            
+        
+
+        circle_marker_b49f8bc3f9a0183541fb1adc16c47b14.bindPopup(popup_8da22ef793bc42c0a15023f55ae5749e)
+        ;
+
+        
+    
+    
+            var circle_marker_7a607beeacca378020f7fe7b0b7e0e88 = L.circleMarker(
+                [32.811499999999995, 34.9986],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;white&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: true, &quot;fillColor&quot;: &quot;#F4A261&quot;, &quot;fillOpacity&quot;: 0.85, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 9, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_316c76e28cc4853364d4e6ff19779060);
+        
+    
+        var popup_63e5710151f484abe52387115d38bd48 = L.popup({
+  &quot;maxWidth&quot;: 300,
+});
+
+        
+            
+                var html_24882f0413fff8d4ea68dd7408349a4b = $(`&lt;div id=&quot;html_24882f0413fff8d4ea68dd7408349a4b&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;             &lt;div style=&quot;font-family: &#x27;Segoe UI&#x27;, Tahoma, Geneva, Verdana, sans-serif; direction: rtl; text-align: right; min-width: 200px; padding: 5px;&quot;&gt;                 &lt;b style=&quot;color: #F4A261; font-size: 15px; border-bottom: 2px solid #F4A261; padding-bottom: 3px;&quot;&gt;IMG_008.jpg&lt;/b&gt;                 &lt;div style=&quot;margin-top: 10px; font-size: 13px; color: #333;&quot;&gt;                     &lt;b&gt;תאריך:&lt;/b&gt; 2025:01:14 13:30:00&lt;br&gt;                     &lt;b&gt;מכשיר:&lt;/b&gt; &lt;span style=&quot;color: #F4A261; font-weight: bold;&quot;&gt;Canon EOS R5&lt;/span&gt;&lt;br&gt;                     &lt;hr style=&quot;border: 0; border-top: 1px solid #eee; margin: 8px 0;&quot;&gt;                     &lt;small style=&quot;color: #666;&quot;&gt;נתיב: N/A&lt;/small&gt;                 &lt;/div&gt;             &lt;/div&gt;         &lt;/div&gt;`)[0];
+                popup_63e5710151f484abe52387115d38bd48.setContent(html_24882f0413fff8d4ea68dd7408349a4b);
+            
+        
+
+        circle_marker_7a607beeacca378020f7fe7b0b7e0e88.bindPopup(popup_63e5710151f484abe52387115d38bd48)
+        ;
+
+        
+    
+    
+            var circle_marker_436db024a3259d62888182389690c3da = L.circleMarker(
+                [31.253, 34.7915],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;white&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: true, &quot;fillColor&quot;: &quot;#457B9D&quot;, &quot;fillOpacity&quot;: 0.85, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 9, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_316c76e28cc4853364d4e6ff19779060);
+        
+    
+        var popup_11e1cab71ee1f0c97803a40fd9e41ae6 = L.popup({
+  &quot;maxWidth&quot;: 300,
+});
+
+        
+            
+                var html_35ff86347926b4d2c973e51a0a77b8a0 = $(`&lt;div id=&quot;html_35ff86347926b4d2c973e51a0a77b8a0&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;             &lt;div style=&quot;font-family: &#x27;Segoe UI&#x27;, Tahoma, Geneva, Verdana, sans-serif; direction: rtl; text-align: right; min-width: 200px; padding: 5px;&quot;&gt;                 &lt;b style=&quot;color: #457B9D; font-size: 15px; border-bottom: 2px solid #457B9D; padding-bottom: 3px;&quot;&gt;IMG_009.jpg&lt;/b&gt;                 &lt;div style=&quot;margin-top: 10px; font-size: 13px; color: #333;&quot;&gt;                     &lt;b&gt;תאריך:&lt;/b&gt; 2025:01:15 09:30:00&lt;br&gt;                     &lt;b&gt;מכשיר:&lt;/b&gt; &lt;span style=&quot;color: #457B9D; font-weight: bold;&quot;&gt;Samsung Galaxy S23&lt;/span&gt;&lt;br&gt;                     &lt;hr style=&quot;border: 0; border-top: 1px solid #eee; margin: 8px 0;&quot;&gt;                     &lt;small style=&quot;color: #666;&quot;&gt;נתיב: N/A&lt;/small&gt;                 &lt;/div&gt;             &lt;/div&gt;         &lt;/div&gt;`)[0];
+                popup_11e1cab71ee1f0c97803a40fd9e41ae6.setContent(html_35ff86347926b4d2c973e51a0a77b8a0);
+            
+        
+
+        circle_marker_436db024a3259d62888182389690c3da.bindPopup(popup_11e1cab71ee1f0c97803a40fd9e41ae6)
+        ;
+
+        
+    
+    
+            var circle_marker_a28a33126584de22cbcf7809860a9d00 = L.circleMarker(
+                [31.253, 34.7915],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;white&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: true, &quot;fillColor&quot;: &quot;#457B9D&quot;, &quot;fillOpacity&quot;: 0.85, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 9, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_316c76e28cc4853364d4e6ff19779060);
+        
+    
+        var popup_d97dbfb125b6e3e1b33ce56fb32908b1 = L.popup({
+  &quot;maxWidth&quot;: 300,
+});
+
+        
+            
+                var html_52aeef36cbfec292c6e8ea879193d046 = $(`&lt;div id=&quot;html_52aeef36cbfec292c6e8ea879193d046&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;             &lt;div style=&quot;font-family: &#x27;Segoe UI&#x27;, Tahoma, Geneva, Verdana, sans-serif; direction: rtl; text-align: right; min-width: 200px; padding: 5px;&quot;&gt;                 &lt;b style=&quot;color: #457B9D; font-size: 15px; border-bottom: 2px solid #457B9D; padding-bottom: 3px;&quot;&gt;IMG_009.jpg&lt;/b&gt;                 &lt;div style=&quot;margin-top: 10px; font-size: 13px; color: #333;&quot;&gt;                     &lt;b&gt;תאריך:&lt;/b&gt; 2025:01:15 09:30:00&lt;br&gt;                     &lt;b&gt;מכשיר:&lt;/b&gt; &lt;span style=&quot;color: #457B9D; font-weight: bold;&quot;&gt;Samsung Galaxy S23&lt;/span&gt;&lt;br&gt;                     &lt;hr style=&quot;border: 0; border-top: 1px solid #eee; margin: 8px 0;&quot;&gt;                     &lt;small style=&quot;color: #666;&quot;&gt;נתיב: N/A&lt;/small&gt;                 &lt;/div&gt;             &lt;/div&gt;         &lt;/div&gt;`)[0];
+                popup_d97dbfb125b6e3e1b33ce56fb32908b1.setContent(html_52aeef36cbfec292c6e8ea879193d046);
+            
+        
+
+        circle_marker_a28a33126584de22cbcf7809860a9d00.bindPopup(popup_d97dbfb125b6e3e1b33ce56fb32908b1)
+        ;
+
+        
+    
+    
+            var circle_marker_b51935b2397e4b85d744f9561a461503 = L.circleMarker(
+                [31.262, 34.8013],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;white&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: true, &quot;fillColor&quot;: &quot;#457B9D&quot;, &quot;fillOpacity&quot;: 0.85, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 9, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_316c76e28cc4853364d4e6ff19779060);
+        
+    
+        var popup_56239b9dc25473e6d90b29ec3965c74f = L.popup({
+  &quot;maxWidth&quot;: 300,
+});
+
+        
+            
+                var html_f46ec1b3a884128e55149383fe3d60e7 = $(`&lt;div id=&quot;html_f46ec1b3a884128e55149383fe3d60e7&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;             &lt;div style=&quot;font-family: &#x27;Segoe UI&#x27;, Tahoma, Geneva, Verdana, sans-serif; direction: rtl; text-align: right; min-width: 200px; padding: 5px;&quot;&gt;                 &lt;b style=&quot;color: #457B9D; font-size: 15px; border-bottom: 2px solid #457B9D; padding-bottom: 3px;&quot;&gt;IMG_010.jpg&lt;/b&gt;                 &lt;div style=&quot;margin-top: 10px; font-size: 13px; color: #333;&quot;&gt;                     &lt;b&gt;תאריך:&lt;/b&gt; 2025:01:15 14:00:00&lt;br&gt;                     &lt;b&gt;מכשיר:&lt;/b&gt; &lt;span style=&quot;color: #457B9D; font-weight: bold;&quot;&gt;Samsung Galaxy S23&lt;/span&gt;&lt;br&gt;                     &lt;hr style=&quot;border: 0; border-top: 1px solid #eee; margin: 8px 0;&quot;&gt;                     &lt;small style=&quot;color: #666;&quot;&gt;נתיב: N/A&lt;/small&gt;                 &lt;/div&gt;             &lt;/div&gt;         &lt;/div&gt;`)[0];
+                popup_56239b9dc25473e6d90b29ec3965c74f.setContent(html_f46ec1b3a884128e55149383fe3d60e7);
+            
+        
+
+        circle_marker_b51935b2397e4b85d744f9561a461503.bindPopup(popup_56239b9dc25473e6d90b29ec3965c74f)
+        ;
+
+        
+    
+    
+            var circle_marker_49dd237da4d2bf6a47ab2fd338f1e381 = L.circleMarker(
+                [29.556900000000002, 34.949799999999996],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;white&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: true, &quot;fillColor&quot;: &quot;#457B9D&quot;, &quot;fillOpacity&quot;: 0.85, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 9, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_316c76e28cc4853364d4e6ff19779060);
+        
+    
+        var popup_1f23391aabc62c46a1d8cd250e448008 = L.popup({
+  &quot;maxWidth&quot;: 300,
+});
+
+        
+            
+                var html_3a6357d28417008cadd1ec17cab45d45 = $(`&lt;div id=&quot;html_3a6357d28417008cadd1ec17cab45d45&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;             &lt;div style=&quot;font-family: &#x27;Segoe UI&#x27;, Tahoma, Geneva, Verdana, sans-serif; direction: rtl; text-align: right; min-width: 200px; padding: 5px;&quot;&gt;                 &lt;b style=&quot;color: #457B9D; font-size: 15px; border-bottom: 2px solid #457B9D; padding-bottom: 3px;&quot;&gt;IMG_011.jpg&lt;/b&gt;                 &lt;div style=&quot;margin-top: 10px; font-size: 13px; color: #333;&quot;&gt;                     &lt;b&gt;תאריך:&lt;/b&gt; 2025:01:16 11:00:00&lt;br&gt;                     &lt;b&gt;מכשיר:&lt;/b&gt; &lt;span style=&quot;color: #457B9D; font-weight: bold;&quot;&gt;Samsung Galaxy S23&lt;/span&gt;&lt;br&gt;                     &lt;hr style=&quot;border: 0; border-top: 1px solid #eee; margin: 8px 0;&quot;&gt;                     &lt;small style=&quot;color: #666;&quot;&gt;נתיב: N/A&lt;/small&gt;                 &lt;/div&gt;             &lt;/div&gt;         &lt;/div&gt;`)[0];
+                popup_1f23391aabc62c46a1d8cd250e448008.setContent(html_3a6357d28417008cadd1ec17cab45d45);
+            
+        
+
+        circle_marker_49dd237da4d2bf6a47ab2fd338f1e381.bindPopup(popup_1f23391aabc62c46a1d8cd250e448008)
+        ;
+
+        
+    
+    
+            var circle_marker_657a7f2549143fdb6c629e3049366bfb = L.circleMarker(
+                [29.540000000000003, 34.9415],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;white&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: true, &quot;fillColor&quot;: &quot;#2A9D8F&quot;, &quot;fillOpacity&quot;: 0.85, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 9, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_316c76e28cc4853364d4e6ff19779060);
+        
+    
+        var popup_c7b0ed9afc6a4e8867ea5d2ce496e0c0 = L.popup({
+  &quot;maxWidth&quot;: 300,
+});
+
+        
+            
+                var html_c78bc98e083a0e6ac6c451d0dd590232 = $(`&lt;div id=&quot;html_c78bc98e083a0e6ac6c451d0dd590232&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;             &lt;div style=&quot;font-family: &#x27;Segoe UI&#x27;, Tahoma, Geneva, Verdana, sans-serif; direction: rtl; text-align: right; min-width: 200px; padding: 5px;&quot;&gt;                 &lt;b style=&quot;color: #2A9D8F; font-size: 15px; border-bottom: 2px solid #2A9D8F; padding-bottom: 3px;&quot;&gt;IMG_012.jpg&lt;/b&gt;                 &lt;div style=&quot;margin-top: 10px; font-size: 13px; color: #333;&quot;&gt;                     &lt;b&gt;תאריך:&lt;/b&gt; 2025:01:16 15:30:00&lt;br&gt;                     &lt;b&gt;מכשיר:&lt;/b&gt; &lt;span style=&quot;color: #2A9D8F; font-weight: bold;&quot;&gt;Apple iPhone 15 Pro&lt;/span&gt;&lt;br&gt;                     &lt;hr style=&quot;border: 0; border-top: 1px solid #eee; margin: 8px 0;&quot;&gt;                     &lt;small style=&quot;color: #666;&quot;&gt;נתיב: N/A&lt;/small&gt;                 &lt;/div&gt;             &lt;/div&gt;         &lt;/div&gt;`)[0];
+                popup_c7b0ed9afc6a4e8867ea5d2ce496e0c0.setContent(html_c78bc98e083a0e6ac6c451d0dd590232);
+            
+        
+
+        circle_marker_657a7f2549143fdb6c629e3049366bfb.bindPopup(popup_c7b0ed9afc6a4e8867ea5d2ce496e0c0)
+        ;
+
+        
+    
+&lt;/script&gt;
+&lt;/html&gt;" style="position:absolute;width:100%;height:100%;left:0;top:0;border:none !important;" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe></div></div>
+            </div>
+
+            <div class="section-title">פירוט נכסים מלא</div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>שם קובץ (לחץ למידע נוסף)</th>
+                            <th>זמן צילום</th>
+                            <th>סטטוס GPS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">IMG_012.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> Apple iPhone 15 Pro<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">2025:01:16 15:30:00</td>
+                <td class="status-col"><span class="tag-gps">GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">IMG_007.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> Apple iPhone 15 Pro<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">2025:01:14 10:00:00</td>
+                <td class="status-col"><span class="tag-gps">GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">IMG_011.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> Samsung Galaxy S23<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">2025:01:16 11:00:00</td>
+                <td class="status-col"><span class="tag-gps">GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">IMG_010.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> Samsung Galaxy S23<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">2025:01:15 14:00:00</td>
+                <td class="status-col"><span class="tag-gps">GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">IMG_009.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> Samsung Galaxy S23<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">2025:01:15 09:30:00</td>
+                <td class="status-col"><span class="tag-gps">GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">IMG_008.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> Canon EOS R5<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">2025:01:14 13:30:00</td>
+                <td class="status-col"><span class="tag-gps">GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">IMG_009.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> Samsung Galaxy S23<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">2025:01:15 09:30:00</td>
+                <td class="status-col"><span class="tag-gps">GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">תמונה של WhatsApp‏ 2024-02-29 בשעה 21.06.20_9ba8ad59.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> None None<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">None</td>
+                <td class="status-col"><span class="tag-no">NO GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">20230207_155449.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> LG Electronics LM-X210(G)<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">2023:02:07 15:54:48</td>
+                <td class="status-col"><span class="tag-gps">GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">20230803_125716.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> samsung Galaxy A24<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">2023:08:03 12:57:16</td>
+                <td class="status-col"><span class="tag-gps">GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">20230801_190044.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> samsung Galaxy A24<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">2023:08:01 19:00:44</td>
+                <td class="status-col"><span class="tag-no">NO GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">IMG_001.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> Samsung Galaxy S23<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">2025:01:12 08:30:00</td>
+                <td class="status-col"><span class="tag-gps">GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">20230317_100725.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> samsung SM-A125F<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">2023:03:17 10:07:24</td>
+                <td class="status-col"><span class="tag-no">NO GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">תמונה של WhatsApp‏ 2024-06-08 בשעה 22.25.21_39231de9.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> None None<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">None</td>
+                <td class="status-col"><span class="tag-no">NO GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">20230205_183551.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> samsung SM-A125F<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">2023:02:05 18:35:51</td>
+                <td class="status-col"><span class="tag-no">NO GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">תמונה של WhatsApp‏ 2024-05-25 בשעה 23.26.41_fb540559 - Copy.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> None None<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">None</td>
+                <td class="status-col"><span class="tag-no">NO GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">IMG_003.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> Samsung Galaxy S23<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">2025:01:12 14:00:00</td>
+                <td class="status-col"><span class="tag-gps">GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">IMG_002.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> Samsung Galaxy S23<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">2025:01:12 11:15:00</td>
+                <td class="status-col"><span class="tag-gps">GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">20230803_114132.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> samsung Galaxy A24<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">2023:08:03 11:41:33</td>
+                <td class="status-col"><span class="tag-gps">GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">IMG_006.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> Apple iPhone 15 Pro<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">2025:01:13 16:45:00</td>
+                <td class="status-col"><span class="tag-gps">GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">IMG_005.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> Apple iPhone 15 Pro<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">2025:01:13 12:30:00</td>
+                <td class="status-col"><span class="tag-gps">GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">IMG_004.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> Apple iPhone 15 Pro<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">2025:01:13 09:00:00</td>
+                <td class="status-col"><span class="tag-gps">GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">20230118_070716.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> samsung SM-A125F<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">2023:01:18 07:07:16</td>
+                <td class="status-col"><span class="tag-no">NO GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">תהלוכה.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> None None<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">None</td>
+                <td class="status-col"><span class="tag-no">NO GPS</span></td>
+            </tr>
+        
+            <tr>
+                <td class="file-name">
+                    <details>
+                        <summary style="cursor: pointer; outline: none; color: #2563eb; font-weight: 500;">תמונה של WhatsApp‏ 2024-03-07 בשעה 16.46.37_38b91f13.jpg</summary>
+                        <div style="font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 5px; border: 1px solid #e2e8f0;">
+                            <b>מכשיר:</b> None None<br>
+                            <b>נתיב:</b> N/A
+                        </div>
+                    </details>
+                </td>
+                <td class="date-col">None</td>
+                <td class="status-col"><span class="tag-no">NO GPS</span></td>
+            </tr>
+        </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+    </html>
+    
